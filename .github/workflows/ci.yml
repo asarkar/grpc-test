@@ -1,0 +1,27 @@
+name: CI Pipeline
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Build and test
+        run: ./gradlew clean build -x ktlintCheck -x ktlintFormat
+        continue-on-error: true
+
+      - name: Test report
+        uses: asadmansr/android-test-report-action@v1.2.0
+
+      - name: Lint
+        run: ./gradlew ktlintCheck ktlintFormat
