@@ -1,5 +1,6 @@
 package com.asarkar.grpc.test
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
@@ -10,11 +11,11 @@ open class BaseTestCase {
 
 @ExtendWith(GrpcCleanupExtension::class)
 class ExampleTestCase5 : BaseTestCase() {
-    private val setOfResources: Set<Resources?> = mutableSetOf()
+    private val setOfResources: MutableSet<Resources?> = mutableSetOf()
     private val set = Mockito.spy(setOfResources)
 
     @Test
     fun testInheritResource() {
-        setOfResources.plus(super.resources)
+        assertThat(setOfResources.add(super.resources)).isTrue()
     }
 }

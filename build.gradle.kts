@@ -29,6 +29,7 @@ dependencies {
     implementation("org.junit.jupiter:junit-jupiter-api")
     implementation("io.grpc:grpc-api")
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("io.grpc:grpc-core")
     testImplementation("org.mockito:mockito-core:$mockitoVersion")
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.junit.platform:junit-platform-testkit:$jUnitTestkitVersion")

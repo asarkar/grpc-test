@@ -1,5 +1,6 @@
 package com.asarkar.grpc.test
 
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.AfterEachCallback
@@ -29,7 +30,7 @@ import kotlin.reflect.KFunction1
  */
 class GrpcCleanupExtension :
     BeforeEachCallback, AfterEachCallback, ParameterResolver, BeforeAllCallback, AfterAllCallback {
-    private var resources: Resources? = null
+    private val resources = mutableMapOf<Boolean, MutableList<Resources>>()
     private var resourcesField: Field? = null
 
     override fun beforeEach(ctx: ExtensionContext) {
@@ -51,7 +52,7 @@ class GrpcCleanupExtension :
 
     override fun afterEach(ctx: ExtensionContext) {
         var successful = true
-        this.resources?.also {
+        this.resources[false]?.forEach {
             getCleanUpMethod(ctx)(it)
             successful = it.awaitReleased()
         }
@@ -59,22 +60,26 @@ class GrpcCleanupExtension :
         if (shouldAccessResourcesField(ctx)) {
             tryGet(ctx.requiredTestInstance)?.also {
                 getCleanUpMethod(ctx)(it)
-                if (!it.awaitReleased()) {
-                    if (!successful) throw PostconditionViolationException("$resources and $it couldn't be released")
-                    else throw PostconditionViolationException("$it couldn't be released")
-                }
+                successful = it.awaitReleased()
+
                 trySet(ctx.requiredTestInstance, null)
             }
         }
-        if (!successful) throw PostconditionViolationException("$resources couldn't be released")
+        if (!successful) throw PostconditionViolationException("One or more Resources couldn't be released")
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
         return parameterContext.parameter.type == Resources::class.java
     }
 
-    override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
-        return Resources().also { resources = it }
+    override fun resolveParameter(parameterCtx: ParameterContext, extensionCtx: ExtensionContext): Any {
+        val once = !parameterCtx.target.isPresent ||
+            (
+                extensionCtx.testInstanceLifecycle.orElse(null) == TestInstance.Lifecycle.PER_CLASS &&
+                    parameterCtx.declaringExecutable.isAnnotationPresent(BeforeAll::class.java)
+                )
+
+        return Resources().also { resources.getOrPut(once, { mutableListOf() }).add(it) }
     }
 
     override fun beforeAll(ctx: ExtensionContext) {
@@ -94,10 +99,16 @@ class GrpcCleanupExtension :
     }
 
     override fun afterAll(ctx: ExtensionContext) {
+        var successful = true
         tryGet(ctx.testInstance.orElse(null))?.also {
             getCleanUpMethod(ctx)(it)
-            if (!it.awaitReleased()) throw PostconditionViolationException("$it couldn't be released")
+            successful = it.awaitReleased()
         }
+        this.resources[true]?.forEach {
+            getCleanUpMethod(ctx)(it)
+            successful = it.awaitReleased()
+        }
+        if (!successful) throw PostconditionViolationException("One or more Resources couldn't be released")
     }
 
     private fun shouldAccessResourcesField(ctx: ExtensionContext): Boolean {
