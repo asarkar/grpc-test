@@ -40,6 +40,11 @@ class GrpcCleanupExtension :
         }
 
         if (shouldAccessResourcesField(ctx)) {
+            if (tryGet(ctx.requiredTestInstance) != null) {
+                throw PreconditionViolationException(
+                    "Either set lifecycle PER_CLASS or don't initialize Resources field"
+                )
+            }
             trySet(ctx.requiredTestInstance)
         }
     }
@@ -58,6 +63,7 @@ class GrpcCleanupExtension :
                     if (!successful) throw PostconditionViolationException("$resources and $it couldn't be released")
                     else throw PostconditionViolationException("$it couldn't be released")
                 }
+                trySet(ctx.requiredTestInstance, null)
             }
         }
         if (!successful) throw PostconditionViolationException("$resources couldn't be released")
@@ -81,7 +87,9 @@ class GrpcCleanupExtension :
                 throw JUnitException("Illegal state: Cannot access Resources field", e)
             }
             resourcesField = field
-            trySet(ctx.testInstance.orElse(null))
+            if (tryGet(ctx.testInstance.orElse(null)) == null) {
+                trySet(ctx.testInstance.orElse(null))
+            }
         }
     }
 
@@ -98,9 +106,9 @@ class GrpcCleanupExtension :
             !resourcesField.isStatic()
     }
 
-    private fun trySet(target: Any?) {
+    private fun trySet(target: Any?, value: Resources? = Resources()) {
         try {
-            resourcesField?.takeIf { target != null || it.isStatic() }?.set(target, Resources())
+            resourcesField?.takeIf { target != null || it.isStatic() }?.set(target, value)
         } catch (e: ReflectiveOperationException) {
             throw JUnitException("Illegal state: Cannot set Resources field", e)
         }

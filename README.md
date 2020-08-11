@@ -20,13 +20,15 @@ Declare a `Resources` in one of the three following ways, and register `Server` 
 
 Get a `Resources` from:
 1. A test method parameter injection, or
-2. An instance variable, or
-3. A static variable.
+2. An instance field, or
+3. A static field.
 
 The difference is in the lifecycle of the `Resources` object. For `#1`, a new instance is created for every test method. 
 `#2` is the same as `#1` unless the test class declares `@TestInstance(TestInstance.Lifecycle.PER_CLASS)`, in which case 
 one instance is shared among all the tests. `#3` is obviously one instance shared among all the tests.
 
+Note that for `#2` and `#3`, if the variable is already been assigned a value by the user, the extension will not 
+reinitialize it.
 
 ```
 @ExtendWith(GrpcCleanupExtension.class)

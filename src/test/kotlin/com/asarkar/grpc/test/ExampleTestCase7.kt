@@ -7,8 +7,8 @@ import org.mockito.Mockito
 
 @ExtendWith(GrpcCleanupExtension::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ExampleTestCase3 {
-    private var resources: Resources? = null
+class ExampleTestCase7 {
+    private var resources = Resources()
     private val setOfResources: Set<Resources?> = mutableSetOf()
     private val set = Mockito.spy(setOfResources)
 
