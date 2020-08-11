@@ -154,7 +154,7 @@ class GrpcCleanupExtensionIntegrationTests {
     }
 
     @Test
-    fun testReinitializeInstanceVariableForEachTest() {
+    fun testReinitializeInstanceField() {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
@@ -171,11 +171,11 @@ class GrpcCleanupExtensionIntegrationTests {
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
-        assertThat(mocks.map { it as Set<*> }.toSet()).hasSize(3)
+        assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(3)
     }
 
     @Test
-    fun testInitializeInstanceVariableOnlyOnce() {
+    fun testInitializeInstanceFieldOnlyOnce() {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
@@ -192,11 +192,11 @@ class GrpcCleanupExtensionIntegrationTests {
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
-        assertThat(mocks.map { it as Set<*> }.toSet()).hasSize(1)
+        assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(1)
     }
 
     @Test
-    fun testInitializeStaticVariableOnlyOnce() {
+    fun testInitializeStaticFieldOnlyOnce() {
         EngineTestKit.engine("junit-jupiter")
             .selectors(
                 selectClass(ExampleTestCase4::class.java)
@@ -230,11 +230,11 @@ class GrpcCleanupExtensionIntegrationTests {
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
-        assertThat(mocks.map { it as Set<*> }.toSet()).hasSize(1)
+        assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(1)
     }
 
     @Test
-    fun testMultipleParameters() {
+    fun testMultipleParametersError() {
         EngineTestKit.engine("junit-jupiter")
             .selectors(
                 selectMethod(
@@ -254,7 +254,7 @@ class GrpcCleanupExtensionIntegrationTests {
     }
 
     @Test
-    fun testMultipleInstances() {
+    fun testMultipleInstanceFieldsError() {
         EngineTestKit.engine("junit-jupiter")
             .selectors(
                 selectClass(
@@ -271,7 +271,7 @@ class GrpcCleanupExtensionIntegrationTests {
     }
 
     @Test
-    fun testAlreadyInitialized() {
+    fun testAlreadyInitializedField() {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
@@ -288,11 +288,11 @@ class GrpcCleanupExtensionIntegrationTests {
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
-        assertThat(mocks.map { it as Set<*> }.toSet()).hasSize(1)
+        assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(1)
     }
 
     @Test
-    fun testCannotRetainAlreadyInitialized() {
+    fun testAlreadyInitializedFieldError() {
         EngineTestKit.engine("junit-jupiter")
             .selectors(
                 selectClass(ExampleTestCase8::class.java)
@@ -304,5 +304,28 @@ class GrpcCleanupExtensionIntegrationTests {
                 1,
                 event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java)))
             )
+    }
+
+    @Test
+    fun testInitializeParameterOnlyOnce() {
+        val mocks = mutableListOf<Any>()
+        val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
+        Mockito.framework().addListener(listener)
+        EngineTestKit.engine("junit-jupiter")
+            .selectors(
+                selectClass(ExampleTestCase9::class.java)
+            )
+            .execute()
+            .testEvents()
+            .assertThatEvents()
+            .haveExactly(
+                2,
+                event(
+                    finishedSuccessfully()
+                )
+            )
+
+        assertThat(mocks).allMatch { it is Set<*> }
+        assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(3)
     }
 }
