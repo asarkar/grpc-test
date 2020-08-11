@@ -187,7 +187,7 @@ class GrpcCleanupExtensionIntegrationTests {
             .testEvents()
             .assertThatEvents()
             .haveExactly(
-                3,
+                2,
                 event(finishedSuccessfully())
             )
 
@@ -263,6 +263,42 @@ class GrpcCleanupExtensionIntegrationTests {
             )
             .execute()
             .allEvents()
+            .assertThatEvents()
+            .haveExactly(
+                1,
+                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java)))
+            )
+    }
+
+    @Test
+    fun testAlreadyInitialized() {
+        val mocks = mutableListOf<Any>()
+        val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
+        Mockito.framework().addListener(listener)
+        EngineTestKit.engine("junit-jupiter")
+            .selectors(
+                selectClass(ExampleTestCase7::class.java)
+            )
+            .execute()
+            .testEvents()
+            .assertThatEvents()
+            .haveExactly(
+                2,
+                event(finishedSuccessfully())
+            )
+
+        assertThat(mocks).allMatch { it is Set<*> }
+        assertThat(mocks.map { it as Set<*> }.toSet()).hasSize(1)
+    }
+
+    @Test
+    fun testCannotRetainAlreadyInitialized() {
+        EngineTestKit.engine("junit-jupiter")
+            .selectors(
+                selectClass(ExampleTestCase8::class.java)
+            )
+            .execute()
+            .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
