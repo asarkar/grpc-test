@@ -10,9 +10,8 @@ Requires Java 8 or later. Verified working with the latest JUnit 5 version, whic
 
 ## Installation
 
-You can find the latest version on Bintray. [ ![Download](https://api.bintray.com/packages/asarkar/mvn/com.asarkar.grpc%3Agrpc-test/images/download.svg) ](https://bintray.com/asarkar/mvn/com.asarkar.grpc%3Agrpc-test/_latestVersion)
-
-It is also on Maven Central and jcenter.
+You can find the latest version
+on [Maven Central](https://search.maven.org/search?q=g:com.asarkar.grpc%20AND%20a:grpc-test).
 
 ## Usage
 
@@ -46,9 +45,9 @@ class ExampleTestCase {
 
 ## Contribute
 
-This project is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues.
-If you like it, you can help by spreading the word!
+This project is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues. If you like
+it, you can help by spreading the word and "Starring" the GitHub repo!
 
 ## License
 
-Copyright 2020 Abhijit Sarkar - Released under [Apache License v2.0](LICENSE).
+Copyright 2021 Abhijit Sarkar - Released under [Apache License v2.0](LICENSE).

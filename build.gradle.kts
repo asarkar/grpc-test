@@ -1,9 +1,12 @@
+import java.util.Base64
+
 plugins {
     kotlin("jvm")
     `maven-publish`
     id("org.jetbrains.dokka")
     id("org.jlleitschuh.gradle.ktlint")
-    id("com.jfrog.bintray")
+    id("io.github.gradle-nexus.publish-plugin")
+    signing
 }
 
 val projectGroup: String by project
@@ -14,25 +17,26 @@ version = projectVersion
 description = projectDescription
 
 repositories {
-    jcenter()
+    maven("https://kotlin.bintray.com/kotlinx")
+    mavenCentral()
 }
 
-val jUnitVersion: String by project
-val gRPCVersion: String by project
+val junitVersion: String by project
+val grpcVersion: String by project
 val mockitoVersion: String by project
-val jUnitTestkitVersion: String by project
+val junitTestkitVersion: String by project
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation(platform("io.grpc:grpc-bom:$gRPCVersion"))
-    implementation(platform("org.junit:junit-bom:$jUnitVersion"))
+    implementation(platform("io.grpc:grpc-bom:$grpcVersion"))
+    implementation(platform("org.junit:junit-bom:$junitVersion"))
     implementation("org.junit.jupiter:junit-jupiter-api")
     implementation("io.grpc:grpc-api")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.grpc:grpc-core")
     testImplementation("org.mockito:mockito-core:$mockitoVersion")
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-    testImplementation("org.junit.platform:junit-platform-testkit:$jUnitTestkitVersion")
+    testImplementation("org.junit.platform:junit-platform-testkit:$junitTestkitVersion")
 }
 
 plugins.withType<JavaPlugin> {
@@ -49,9 +53,13 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     }
 }
 
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask> {
-    outputFormat = "html"
-    outputDirectory = "$buildDir/javadoc"
+tasks.dokkaHtml.configure {
+    outputDirectory.set(buildDir.resolve("javadoc"))
+    dokkaSourceSets.configureEach {
+        jdkVersion.set(8)
+        skipEmptyPackages.set(true)
+        platform.set(org.jetbrains.dokka.Platform.jvm)
+    }
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -65,7 +73,7 @@ val kdocJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     description = "Creates KDoc"
     archiveClassifier.set("javadoc")
-    from(tasks.dokka)
+    from(tasks.dokkaHtml)
 }
 
 tasks.jar.configure {
@@ -112,32 +120,22 @@ publishing {
     }
 }
 
-val bintrayRepo: String by project
-bintray {
-    user = (findProperty("bintrayUser") ?: System.getenv("BINTRAY_USER"))?.toString()
-    key = (findProperty("bintrayKey") ?: System.getenv("BINTRAY_KEY"))?.toString()
-    setPublications(*publishing.publications.names.toTypedArray())
-    with(pkg) {
-        repo = bintrayRepo
-        name = "${project.group}:${project.name}"
-        desc = project.description
-        websiteUrl = "https://$gitHubUrl"
-        vcsUrl = "https://$gitHubUrl.git"
-        setLabels("grpc", "protobuf", "test", "junit5", "junit")
-        setLicenses(licenseName)
-        with(version) {
-            name = project.version.toString()
-            with(gpg) {
-                sign = true
-            }
-            with(mavenCentralSync) {
-                sync = true
-                user = (findProperty("sonatypeUser") ?: System.getenv("SONATYPE_USER"))?.toString()
-                password = (findProperty("sonatypePwd") ?: System.getenv("SONATYPE_PWD"))?.toString()
-            }
+fun base64Decode(prop: String): String? {
+    return project.findProperty(prop)?.let {
+        String(Base64.getDecoder().decode(it.toString())).trim()
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(base64Decode("signingKey"), base64Decode("signingPassword"))
+    sign(*publishing.publications.toTypedArray())
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(base64Decode("sonatypeUsername"))
+            password.set(base64Decode("sonatypePassword"))
         }
     }
-    publish = true
-    override = false
-    dryRun = false
 }
