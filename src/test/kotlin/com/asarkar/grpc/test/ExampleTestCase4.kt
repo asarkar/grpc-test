@@ -22,9 +22,9 @@ class ExampleTestCase4 {
 
     companion object {
         @JvmStatic
-        internal val setOfResources: MutableSet<Resources?> = mutableSetOf()
+        internal val setOfResources: MutableSet<Resources> = mutableSetOf()
 
         @JvmStatic
-        private var resources: Resources? = null
+        private lateinit var resources: Resources
     }
 }

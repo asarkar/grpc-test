@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(GrpcCleanupExtension::class)
 class ExampleTestCase6 {
-    private var resources: Resources? = null
-    private var resources2: Resources? = null
+    private lateinit var resources: Resources
+    private lateinit var resources2: Resources
 
     @Test
     fun testMultipleInstances() {

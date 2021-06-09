@@ -8,8 +8,8 @@ import org.mockito.Mockito
 @ExtendWith(GrpcCleanupExtension::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ExampleTestCase3 {
-    private var resources: Resources? = null
-    private val setOfResources: MutableSet<Resources?> = mutableSetOf()
+    private lateinit var resources: Resources
+    private val setOfResources: MutableSet<Resources> = mutableSetOf()
     private val set = Mockito.spy(setOfResources)
 
     @Test
