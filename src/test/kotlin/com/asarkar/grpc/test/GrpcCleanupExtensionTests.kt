@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(GrpcCleanupExtension::class)
 class GrpcCleanupExtensionTests {
-    private var resources: Resources? = null
+    private lateinit var resources: Resources
 
     @Test
     fun testParameterInjection(resources: Resources) {

@@ -6,16 +6,16 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 
 open class BaseTestCase {
-    protected var resources: Resources? = null
+    protected lateinit var resources: Resources
 }
 
 @ExtendWith(GrpcCleanupExtension::class)
 class ExampleTestCase5 : BaseTestCase() {
-    private val setOfResources: MutableSet<Resources?> = mutableSetOf()
+    private val setOfResources: MutableSet<Resources> = mutableSetOf()
     private val set = Mockito.spy(setOfResources)
 
     @Test
     fun testInheritResource() {
-        assertThat(setOfResources.add(super.resources)).isTrue()
+        assertThat(setOfResources.add(super.resources)).isTrue
     }
 }

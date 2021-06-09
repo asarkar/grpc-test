@@ -9,7 +9,7 @@ import org.mockito.Mockito
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ExampleTestCase7 {
     private var resources = Resources()
-    private val setOfResources: MutableSet<Resources?> = mutableSetOf()
+    private val setOfResources: MutableSet<Resources> = mutableSetOf()
     private val set = Mockito.spy(setOfResources)
 
     @Test

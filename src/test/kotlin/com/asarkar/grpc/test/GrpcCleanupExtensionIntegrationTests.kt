@@ -328,4 +328,21 @@ class GrpcCleanupExtensionIntegrationTests {
         assertThat(mocks).allMatch { it is Set<*> }
         assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(3)
     }
+
+    @Test
+    fun testNested() {
+        EngineTestKit.engine("junit-jupiter")
+            .selectors(
+                selectClass(ExampleTestCase10::class.java)
+            )
+            .execute()
+            .testEvents()
+            .assertThatEvents()
+            .haveExactly(
+                1,
+                event(finishedSuccessfully())
+            )
+
+        assertThat(ExampleTestCase10.setOfResources).hasSize(2)
+    }
 }

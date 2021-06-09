@@ -1,10 +1,13 @@
 # grpc-test
 
-Includes a JUnit 5 [Extension](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/Extension.html) 
-that can automatically release gRPC resources at the end of the test. Like [GrpcCleanupRule](https://grpc.github.io/grpc-java/javadoc/io/grpc/testing/GrpcCleanupRule.html), 
-but built for JUnit 5 and actively maintained.
+Includes a JUnit
+5 [Extension](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/Extension.html)
+that can automatically release gRPC resources at the end of the test.
+Like [GrpcCleanupRule](https://grpc.github.io/grpc-java/javadoc/io/grpc/testing/GrpcCleanupRule.html), but built for
+JUnit 5 and actively maintained.
 
-Requires Java 8 or later. Verified working with the latest JUnit 5 version, which you can find in the [gradle.properties](gradle.properties).
+Requires Java 8 or later. Verified working with the latest JUnit 5 version, which you can find in
+the [gradle.properties](gradle.properties).
 
 [![](https://github.com/asarkar/grpc-test/workflows/CI%20Pipeline/badge.svg)](https://github.com/asarkar/grpc-test/actions?query=workflow%3A%22CI+Pipeline%22)
 
@@ -15,19 +18,18 @@ on [Maven Central](https://search.maven.org/search?q=g:com.asarkar.grpc%20AND%20
 
 ## Usage
 
-Declare a `Resources` in one of the three following ways, and register `Server` and/or `ManagedChannel` instances with it.
+Declare a `Resources` in one of the three following ways, and register `Server` and/or `ManagedChannel` instances with
+it.
 
 Get a `Resources` from:
+
 1. A test method parameter injection, or
 2. An instance field, or
 3. A static field.
 
-The difference is in the lifecycle of the `Resources` object. For `#1`, a new instance is created for every test method. 
-`#2` is the same as `#1` unless the test class declares `@TestInstance(TestInstance.Lifecycle.PER_CLASS)`, in which case 
+The difference is in the lifecycle of the `Resources` object. For `#1`, a new instance is created for every test method.
+`#2` is the same as `#1` unless the test class declares `@TestInstance(TestInstance.Lifecycle.PER_CLASS)`, in which case
 one instance is shared among all the tests. `#3` is obviously one instance shared among all the tests.
-
-Note that for `#2` and `#3`, if the variable is already been assigned a value by the user, the extension will not 
-reinitialize it.
 
 ```
 @ExtendWith(GrpcCleanupExtension.class)
@@ -42,6 +44,11 @@ class ExampleTestCase {
 }
 
 ```
+
+:information_source: Note that for `#2` and `#3`, if the variable is already been assigned a value by the user, the
+extension will not reinitialize it.
+
+:information_source: If you're writing `@Nested` tests, use either `#1` or `#3` as `#2` won't work.
 
 ## Contribute
 

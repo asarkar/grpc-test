@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
 
 @ExtendWith(GrpcCleanupExtension::class)
 class ExampleTestCase {
-    private var server = Mockito.mock(Server::class.java)
-    private var channel = Mockito.mock(ManagedChannel::class.java)
+    private val server = Mockito.mock(Server::class.java)
+    private val channel = Mockito.mock(ManagedChannel::class.java)
 
     @Test
     fun testSuccessful(resources: Resources) {
