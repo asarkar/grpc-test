@@ -48,7 +48,7 @@ class ExampleTestCase {
 :information_source: Note that for `#2` and `#3`, if the variable is already been assigned a value by the user, the
 extension will not reinitialize it.
 
-:information_source: If you're writing `@Nested` tests, use either `#1` or `#3` as `#2` won't work.
+:information_source: If you're writing `@Nested` tests, see [issues/8](https://github.com/asarkar/grpc-test/issues/8).
 
 ## Contribute
 
