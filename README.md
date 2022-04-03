@@ -6,8 +6,8 @@ that can automatically release gRPC resources at the end of the test.
 Like [GrpcCleanupRule](https://grpc.github.io/grpc-java/javadoc/io/grpc/testing/GrpcCleanupRule.html), but built for
 JUnit 5 and actively maintained.
 
-Requires Java 8 or later. Verified working with the latest JUnit 5 version, which you can find in
-the [gradle.properties](gradle.properties).
+If you like it, consider becoming a
+[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/asarkar).
 
 [![](https://github.com/asarkar/grpc-test/workflows/CI%20Pipeline/badge.svg)](https://github.com/asarkar/grpc-test/actions?query=workflow%3A%22CI+Pipeline%22)
 
@@ -50,11 +50,18 @@ extension will not reinitialize it.
 
 :information_source: If you're writing `@Nested` tests, see [issues/8](https://github.com/asarkar/grpc-test/issues/8).
 
-## Contribute
+## Minimum Requirements
+- Java 8
 
-This project is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues. If you like
-it, you can help by spreading the word and "Starring" the GitHub repo!
+## Contribution
+
+This project is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues.
+
+## Code of Conduct
+
+This project adheres to the Contributor Covenant [code of conduct](https://github.com/asarkar/.github/blob/main/CODE_OF_CONDUCT.md).
+By participating, you are expected to uphold this code.
 
 ## License
 
-Copyright 2021 Abhijit Sarkar - Released under [Apache License v2.0](LICENSE).
+Copyright 2022 Abhijit Sarkar - Released under [Apache License v2.0](LICENSE).
