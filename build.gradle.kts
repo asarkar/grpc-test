@@ -17,7 +17,6 @@ version = projectVersion
 description = projectDescription
 
 repositories {
-    maven("https://kotlin.bintray.com/kotlinx")
     mavenCentral()
 }
 
