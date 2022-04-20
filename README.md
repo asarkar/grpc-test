@@ -53,7 +53,7 @@ extension will not reinitialize it.
 ## Minimum Requirements
 - Java 8
 
-## Contribution
+## Contributing
 
 This project is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues.
 
