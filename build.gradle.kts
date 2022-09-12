@@ -138,3 +138,11 @@ nexusPublishing {
         }
     }
 }
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+    }
+    exclude("**/ignore/**")
+}

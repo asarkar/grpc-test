@@ -70,7 +70,11 @@ class GrpcCleanupExtension :
                     parameterCtx.declaringExecutable.isAnnotationPresent(BeforeAll::class.java)
                 )
 
-        return Resources().also { extensionCtx.resources.getOrPut(once, { mutableListOf() }).add(it) }
+        return Resources().also { resources ->
+            extensionCtx.resources = extensionCtx.resources.also {
+                it.getOrPut(once) { mutableListOf() }.add(resources)
+            }
+        }
     }
 
     override fun beforeAll(ctx: ExtensionContext) {
