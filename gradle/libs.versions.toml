@@ -1,0 +1,35 @@
+[versions]
+junit5 = "5.12.2"
+grpc = "1.72.0"
+mockito = "5.17.0"
+# Refer to the following for Kotlin plugin version:
+# Kotlin JVM plugin compatibility chart: https://kotlinlang.org/docs/gradle-configure-project.html#apply-the-plugin
+# Gradle Embedded Kotlin version compatibility chart: https://docs.gradle.org/current/userguide/compatibility.html#kotlin
+kotlinPlugin = "2.0.20"
+dokkaPlugin = "2.0.0"
+ktlintPlugin = "12.2.0"
+mavenPublishPlugin = "0.31.0"
+spotbugs = "4.9.3"
+errorprone = "2.38.0"
+spotbugsPlugin = "6.1.9"
+spotlessPlugin = "7.0.3"
+errorpronePlugin = "4.2.0"
+palantirJavaFmt = "2.63.0"
+
+[libraries]
+junit-bom = {module = "org.junit:junit-bom", version.ref = "junit5"}
+grpc-bom = {module = "io.grpc:grpc-bom", version.ref = "grpc"}
+mockito-bom = {module = "org.mockito:mockito-bom", version.ref = "mockito"}
+errorprone = {module = "com.google.errorprone:error_prone_core", version.ref = "errorprone"}
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaPlugin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublishPlugin" }
+# https://github.com/spotbugs/spotbugs-gradle-plugin
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugsPlugin" }
+# https://github.com/diffplug/spotless/tree/main/plugin-gradle
+spotless = { id = "com.diffplug.spotless", version.ref = "spotlessPlugin" }
+# https://github.com/tbroyer/gradle-errorprone-plugin
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }

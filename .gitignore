@@ -13,6 +13,7 @@ bin/
 # IntelliJ
 .idea/
 *.iml
+.kotlin
 
 # Maven
 target/
@@ -22,3 +23,6 @@ build/
 .gradle/
 userHome/
 out/
+
+# GPG
+.gnupg

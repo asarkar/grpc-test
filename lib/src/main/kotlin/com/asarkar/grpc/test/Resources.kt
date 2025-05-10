@@ -26,7 +26,11 @@ class Resources {
      *
      * @return this
      */
-    fun <T : Server> register(server: T, timeout: Duration = this.timeout): Resources {
+    @JvmOverloads
+    fun <T : Server> register(
+        server: T,
+        timeout: Duration = this.timeout,
+    ): Resources {
         return this.apply { this@Resources.resources[ServerResource(server)] = timeout }
     }
 
@@ -40,10 +44,14 @@ class Resources {
      *
      * @return this
      */
-    fun <T : ManagedChannel> register(channel: T, timeout: Duration = this.timeout): Resources {
+    @JvmOverloads
+    fun <T : ManagedChannel> register(
+        channel: T,
+        timeout: Duration = this.timeout,
+    ): Resources {
         return this.apply {
             this@Resources.resources[
-                ManagedChannelResource(channel)
+                ManagedChannelResource(channel),
             ] = timeout
         }
     }
@@ -69,13 +77,14 @@ class Resources {
         resources.keys.forEach { it.forceCleanUp() }
     }
 
-    internal fun awaitReleased(): Boolean {
+    internal fun awaitRelease(): Boolean {
         val start = Instant.now()
         var successful = true
         resources.forEach { (r, t) ->
             try {
-                val timeout = t.minus(Duration.between(Instant.now(), start))
-                if (timeout.isNegative || !r.awaitReleased(timeout)) {
+                val timeLapsed = Duration.between(start, Instant.now()).abs()
+                val timeout = t.minus(timeLapsed)
+                if (timeout.isNegative || !r.awaitRelease(timeout)) {
                     successful = false
                     r.forceCleanUp()
                 }
@@ -89,7 +98,11 @@ class Resources {
     }
 
     override fun toString(): String {
-        return if (resources.isEmpty()) "Resources[]" else "Resources${resources.keys.map { it.toString() }}"
+        return if (resources.isEmpty()) {
+            "Resources[]"
+        } else {
+            "Resources${resources.keys.map { it.toString() }}"
+        }
     }
 
     override fun equals(other: Any?): Boolean {
