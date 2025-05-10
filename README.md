@@ -1,20 +1,16 @@
 # grpc-test
 
-Includes a JUnit
-5 [Extension](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/Extension.html)
+Includes a JUnit 5 [Extension](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/Extension.html)
 that can automatically release gRPC resources at the end of the test.
 Like [GrpcCleanupRule](https://grpc.github.io/grpc-java/javadoc/io/grpc/testing/GrpcCleanupRule.html), but built for
 JUnit 5 and actively maintained.
 
-If you like it, consider becoming a
-[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/asarkar).
-
-[![](https://github.com/asarkar/grpc-test/workflows/CI%20Pipeline/badge.svg)](https://github.com/asarkar/grpc-test/actions?query=workflow%3A%22CI+Pipeline%22)
-
-## Installation
-
-You can find the latest version
-on [Maven Central](https://search.maven.org/search?q=g:com.asarkar.grpc%20AND%20a:grpc-test).
+[![Sponsor](https://img.shields.io/static/v1?style=for-the-badge&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/asarkar)
+[![CI](<https://img.shields.io/github/actions/workflow/status/asarkar/grpc-test/ci.yml?branch=main&logo=GitHub&style=for-the-badge>)](https://github.com/asarkar/grpc-test/actions?query=workflow%3A%22CI+Pipeline%22)
+[![Maven](https://img.shields.io/maven-central/v/com.asarkar.grpc/grpc-test?style=for-the-badge&logo=apache-maven)](https://central.sonatype.com/artifact/com.asarkar.grpc/grpc-test?smo=true)
+[![Javadoc](https://javadoc.io/badge2/com.asarkar.grpc/grpc-test/javadoc.svg?style=for-the-badge)](https://javadoc.io/doc/com.asarkar.grpc/grpc-test)
+[![License](https://img.shields.io/github/license/asarkar/grpc-test?style=for-the-badge&logo=apache&color=blue)](https://www.apache.org/licenses/LICENSE-2.0)
+[![COC](https://img.shields.io/static/v1?style=for-the-badge&label=COC&message=Code+Of+Conduct&color=brightgreen)](https://github.com/asarkar/.github/blob/main/CODE_OF_CONDUCT.md)
 
 ## Usage
 
@@ -50,18 +46,7 @@ extension will not reinitialize it.
 
 :information_source: If you're writing `@Nested` tests, see [issues/8](https://github.com/asarkar/grpc-test/issues/8).
 
+The test class in [client](client/src/test) project uses the `GrpcCleanupExtension` from Java code.
+
 ## Minimum Requirements
-- Java 8
-
-## Contributing
-
-This project is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues.
-
-## Code of Conduct
-
-This project adheres to the Contributor Covenant [code of conduct](https://github.com/asarkar/.github/blob/main/CODE_OF_CONDUCT.md).
-By participating, you are expected to uphold this code.
-
-## License
-
-Copyright 2022 Abhijit Sarkar - Released under [Apache License v2.0](LICENSE).
+- See [.java-version](.java-version). See releases for previous versions supporting older Java versions.

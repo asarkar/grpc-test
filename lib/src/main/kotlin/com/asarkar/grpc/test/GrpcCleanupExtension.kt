@@ -1,7 +1,7 @@
 package com.asarkar.grpc.test
 
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -19,22 +19,27 @@ import org.junit.platform.commons.PreconditionViolationException
  * Keeping in line with the [GrpcCleanupRule](https://grpc.github.io/grpc-java/javadoc/io/grpc/testing/GrpcCleanupRule.html),
  * tries to force release if the test has already failed.
  *
+ * **The methods in this class are not intended to be used by the users**.
+ *
  * @author Abhijit Sarkar
  * @since 1.0.0
  */
 class GrpcCleanupExtension :
     BeforeEachCallback, AfterEachCallback, ParameterResolver, BeforeAllCallback, AfterAllCallback {
     override fun beforeEach(ctx: ExtensionContext) {
-        val resources = ctx.requiredTestMethod.parameters
-            .filter { it.type == Resources::class.java }
+        val resources =
+            ctx.requiredTestMethod.parameters
+                .filter { it.type == Resources::class.java }
         if (resources.size > 1) {
-            throw PreconditionViolationException("At most one parameter of type Resources may be declared by a method")
+            throw PreconditionViolationException(
+                "At most one parameter of type Resources may be declared by a method",
+            )
         }
 
         if (ctx.isAccessResourcesField) {
             if (ctx.resourcesInstance != null) {
                 throw PreconditionViolationException(
-                    "Either set lifecycle PER_CLASS or don't initialize Resources field"
+                    "Either set lifecycle PER_CLASS or don't initialize Resources field",
                 )
             }
             ctx.resourcesInstance = Resources()
@@ -45,35 +50,47 @@ class GrpcCleanupExtension :
         var successful = true
         ctx.resources[false]?.forEach {
             ctx.cleanUp(it)
-            successful = it.awaitReleased()
+            successful = it.awaitRelease()
         }
 
         if (ctx.isAccessResourcesField) {
             ctx.resourcesInstance?.also {
                 ctx.cleanUp(it)
-                successful = it.awaitReleased()
+                successful = it.awaitRelease()
 
                 ctx.resourcesInstance = null
             }
         }
-        if (!successful) throw PostconditionViolationException("One or more Resources couldn't be released")
+        if (!successful) {
+            throw PostconditionViolationException(
+                "One or more Resources couldn't be released",
+            )
+        }
     }
 
-    override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
+    override fun supportsParameter(
+        parameterContext: ParameterContext,
+        extensionContext: ExtensionContext,
+    ): Boolean {
         return parameterContext.parameter.type == Resources::class.java
     }
 
-    override fun resolveParameter(parameterCtx: ParameterContext, extensionCtx: ExtensionContext): Any {
-        val once = !parameterCtx.target.isPresent ||
-            (
-                extensionCtx.testInstanceLifecycle.orElse(null) == TestInstance.Lifecycle.PER_CLASS &&
-                    parameterCtx.declaringExecutable.isAnnotationPresent(BeforeAll::class.java)
+    override fun resolveParameter(
+        parameterCtx: ParameterContext,
+        extensionCtx: ExtensionContext,
+    ): Any {
+        val once =
+            !parameterCtx.target.isPresent ||
+                (
+                    extensionCtx.testInstanceLifecycle.orElse(null) == PER_CLASS &&
+                        parameterCtx.declaringExecutable.isAnnotationPresent(BeforeAll::class.java)
                 )
 
         return Resources().also { resources ->
-            extensionCtx.resources = extensionCtx.resources.also {
-                it.getOrPut(once) { mutableListOf() }.add(resources)
-            }
+            extensionCtx.resources =
+                extensionCtx.resources.also {
+                    it.getOrPut(once) { mutableListOf() }.add(resources)
+                }
         }
     }
 
@@ -97,12 +114,16 @@ class GrpcCleanupExtension :
         var successful = true
         ctx.resourcesInstance?.also {
             ctx.cleanUp(it)
-            successful = it.awaitReleased()
+            successful = it.awaitRelease()
         }
         ctx.resources[true]?.forEach {
             ctx.cleanUp(it)
-            successful = it.awaitReleased()
+            successful = it.awaitRelease()
         }
-        if (!successful) throw PostconditionViolationException("One or more Resources couldn't be released")
+        if (!successful) {
+            throw PostconditionViolationException(
+                "One or more Resources couldn't be released",
+            )
+        }
     }
 }

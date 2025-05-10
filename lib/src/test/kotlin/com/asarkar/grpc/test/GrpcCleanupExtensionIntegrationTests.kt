@@ -14,6 +14,7 @@ import io.grpc.ManagedChannel
 import io.grpc.Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInfo
 import org.junit.platform.commons.PreconditionViolationException
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod
@@ -27,25 +28,30 @@ import org.mockito.Mockito
 import org.mockito.listeners.MockCreationListener
 import java.util.concurrent.TimeUnit
 
+private const val JUNIT_JUPITER = "junit-jupiter"
+
 class GrpcCleanupExtensionIntegrationTests {
     @Test
-    fun testSuccessful() {
+    fun testSuccessful(info: TestInfo) {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
-                    ExampleTestCase::class.java.getDeclaredMethod("testSuccessful", Resources::class.java)
-                )
+                    ExampleTestCase::class.java.getDeclaredMethod(
+                        info.testMethod.get().name,
+                        Resources::class.java,
+                    ),
+                ),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(mocks).hasSize(2)
@@ -54,32 +60,41 @@ class GrpcCleanupExtensionIntegrationTests {
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdown()
         Mockito.verify(server)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdown()
         Mockito.verify(channel)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
     }
 
     @Test
-    fun testFailedShutdown() {
+    fun testFailedShutdown(info: TestInfo) {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
-                    ExampleTestCase::class.java.getDeclaredMethod("testFailedShutdown", Resources::class.java)
-                )
+                    ExampleTestCase::class.java.getDeclaredMethod(
+                        info.testMethod.get().name,
+                        Resources::class.java,
+                    ),
+                ),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedWithFailure(instanceOf(PostconditionViolationException::class.java)))
+                event(finishedWithFailure(instanceOf(PostconditionViolationException::class.java))),
             )
 
         assertThat(mocks).hasSize(2)
@@ -88,32 +103,41 @@ class GrpcCleanupExtensionIntegrationTests {
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdown()
         Mockito.verify(server)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdown()
         Mockito.verify(channel)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
     }
 
     @Test
-    fun testException() {
+    fun testException(info: TestInfo) {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
-                    ExampleTestCase::class.java.getDeclaredMethod("testException", Resources::class.java)
-                )
+                    ExampleTestCase::class.java.getDeclaredMethod(
+                        info.testMethod.get().name,
+                        Resources::class.java,
+                    ),
+                ),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedWithFailure(instanceOf(RuntimeException::class.java)))
+                event(finishedWithFailure(instanceOf(RuntimeException::class.java))),
             )
 
         assertThat(mocks).hasSize(2)
@@ -122,32 +146,41 @@ class GrpcCleanupExtensionIntegrationTests {
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdownNow()
         Mockito.verify(server)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdownNow()
         Mockito.verify(channel)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
     }
 
     @Test
-    fun testTimeout() {
+    fun testTimeout(info: TestInfo) {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
-                    ExampleTestCase::class.java.getDeclaredMethod("testTimeout", Resources::class.java)
-                )
+                    ExampleTestCase::class.java.getDeclaredMethod(
+                        info.testMethod.get().name,
+                        Resources::class.java,
+                    ),
+                ),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedWithFailure(instanceOf(PostconditionViolationException::class.java)))
+                event(finishedWithFailure(instanceOf(PostconditionViolationException::class.java))),
             )
         assertThat(mocks).hasSize(2)
 
@@ -155,12 +188,19 @@ class GrpcCleanupExtensionIntegrationTests {
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdown()
         Mockito.verify(server)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdown()
-        Mockito.verify(channel)!!
-            .awaitTermination(ArgumentMatchers.anyLong(), ArgumentMatchers.any(TimeUnit::class.java))
+        Mockito.verify(channel)!!.shutdownNow()
+        Mockito.verify(channel, Mockito.never())!!
+            .awaitTermination(
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(TimeUnit::class.java),
+            )
     }
 
     @Test
@@ -168,16 +208,16 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase2::class.java)
+                selectClass(ExampleTestCase2::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 3,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
@@ -189,16 +229,16 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase3::class.java)
+                selectClass(ExampleTestCase3::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 2,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
@@ -207,16 +247,16 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testInitializeStaticFieldOnlyOnce() {
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase4::class.java)
+                selectClass(ExampleTestCase4::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 3,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(ExampleTestCase4.setOfResources).hasSize(1)
@@ -227,16 +267,16 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase5::class.java)
+                selectClass(ExampleTestCase5::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
@@ -244,39 +284,41 @@ class GrpcCleanupExtensionIntegrationTests {
     }
 
     @Test
-    fun testMultipleParametersError() {
-        EngineTestKit.engine("junit-jupiter")
+    fun testMultipleParametersError(info: TestInfo) {
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
                     ExampleTestCase::class.java.getDeclaredMethod(
-                        "testMultipleParameters", Resources::class.java, Resources::class.java
-                    )
-                )
+                        info.testMethod.get().name,
+                        Resources::class.java,
+                        Resources::class.java,
+                    ),
+                ),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java)))
+                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java))),
             )
     }
 
     @Test
     fun testMultipleInstanceFieldsError() {
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(
-                    ExampleTestCase6::class.java
-                )
+                    ExampleTestCase6::class.java,
+                ),
             )
             .execute()
             .allEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java)))
+                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java))),
             )
     }
 
@@ -285,16 +327,16 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase7::class.java)
+                selectClass(ExampleTestCase7::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 2,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
@@ -303,16 +345,16 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testAlreadyInitializedFieldError() {
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase8::class.java)
+                selectClass(ExampleTestCase8::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java)))
+                event(finishedWithFailure(instanceOf(PreconditionViolationException::class.java))),
             )
     }
 
@@ -321,9 +363,9 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase9::class.java)
+                selectClass(ExampleTestCase9::class.java),
             )
             .execute()
             .testEvents()
@@ -331,8 +373,8 @@ class GrpcCleanupExtensionIntegrationTests {
             .haveExactly(
                 2,
                 event(
-                    finishedSuccessfully()
-                )
+                    finishedSuccessfully(),
+                ),
             )
 
         assertThat(mocks).allMatch { it is Set<*> }
@@ -341,16 +383,16 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testNested() {
-        EngineTestKit.engine("junit-jupiter")
+        EngineTestKit.engine(JUNIT_JUPITER)
             .selectors(
-                selectClass(ExampleTestCase10::class.java)
+                selectClass(ExampleTestCase10::class.java),
             )
             .execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
                 1,
-                event(finishedSuccessfully())
+                event(finishedSuccessfully()),
             )
 
         assertThat(ExampleTestCase10.setOfResources).hasSize(2)

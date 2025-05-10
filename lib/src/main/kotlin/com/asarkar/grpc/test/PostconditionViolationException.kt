@@ -8,4 +8,7 @@ import org.junit.platform.commons.JUnitException
  * @author Abhijit Sarkar
  * @since 1.0.0
  */
-class PostconditionViolationException(message: String, cause: Throwable? = null) : JUnitException(message, cause)
+internal class PostconditionViolationException(
+    message: String,
+    cause: Throwable? = null,
+) : JUnitException(message, cause)

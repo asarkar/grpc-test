@@ -9,31 +9,34 @@ import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction1
 
 private object ExtensionContextUtils {
-    internal val NAMESPACE: ExtensionContext.Namespace = ExtensionContext.Namespace
-        .create(*GrpcCleanupExtension::class.java.name.split(".").toTypedArray())
+    internal val NAMESPACE: ExtensionContext.Namespace =
+        ExtensionContext.Namespace
+            .create(*GrpcCleanupExtension::class.java.name.split(".").toTypedArray())
     internal const val RESOURCES = "resources"
     internal const val RESOURCES_FIELD = "resources-field"
 }
 
 @Suppress("UNCHECKED_CAST")
 internal var ExtensionContext.resources: MutableMap<Boolean, MutableList<Resources>>
-    get() = getStore(ExtensionContextUtils.NAMESPACE)
-        .getOrDefault(
-            ExtensionContextUtils.RESOURCES,
-            MutableMap::class.java,
-            mutableMapOf<Boolean, MutableList<Resources>>()
-        ) as MutableMap<Boolean, MutableList<Resources>>
+    get() =
+        getStore(ExtensionContextUtils.NAMESPACE)
+            .getOrDefault(
+                ExtensionContextUtils.RESOURCES,
+                MutableMap::class.java,
+                mutableMapOf<Boolean, MutableList<Resources>>(),
+            ) as MutableMap<Boolean, MutableList<Resources>>
     set(value) {
         getStore(ExtensionContextUtils.NAMESPACE)
             .put(ExtensionContextUtils.RESOURCES, value)
     }
 
 internal var ExtensionContext.resourcesField: Field?
-    get() = getStore(ExtensionContextUtils.NAMESPACE)
-        .get(
-            ExtensionContextUtils.RESOURCES_FIELD,
-            Field::class.java
-        )
+    get() =
+        getStore(ExtensionContextUtils.NAMESPACE)
+            .get(
+                ExtensionContextUtils.RESOURCES_FIELD,
+                Field::class.java,
+            )
     set(value) {
         getStore(ExtensionContextUtils.NAMESPACE)
             .put(ExtensionContextUtils.RESOURCES_FIELD, value)
@@ -61,22 +64,28 @@ private val ExtensionContext.isStaticField: Boolean
     get() = resourcesField != null && Modifier.isStatic(resourcesField!!.modifiers)
 
 internal val ExtensionContext.isAccessResourcesField: Boolean
-    get() = resourcesField != null &&
-        testInstanceLifecycle.orElse(null) != TestInstance.Lifecycle.PER_CLASS &&
-        !isStaticField
+    get() =
+        resourcesField != null &&
+            testInstanceLifecycle.orElse(null) != TestInstance.Lifecycle.PER_CLASS &&
+            !isStaticField
 
 internal val ExtensionContext.cleanUp: KFunction1<Resources, Unit>
     get() = if (executionException.isPresent) Resources::forceCleanUp else Resources::cleanUp
 
 internal fun ExtensionContext.findResourcesField(): Field? {
-    return generateSequence<Pair<Class<*>?, Field?>>((requiredTestClass to null)) { (clazz, field) ->
-        val fields = try {
-            clazz!!.declaredFields.filter { it.type == Resources::class.java }
-        } catch (e: ReflectiveOperationException) {
-            throw JUnitException("Illegal state: Cannot find Resources field", e)
-        }
+    return generateSequence<Pair<Class<*>?, Field?>>(
+        (requiredTestClass to null),
+    ) { (clazz, field) ->
+        val fields =
+            try {
+                clazz!!.declaredFields.filter { it.type == Resources::class.java }
+            } catch (e: ReflectiveOperationException) {
+                throw JUnitException("Illegal state: Cannot find Resources field", e)
+            }
         if (fields.size > 1) {
-            throw PreconditionViolationException("At most one field of type Resources may be declared by a class")
+            throw PreconditionViolationException(
+                "At most one field of type Resources may be declared by a class",
+            )
         }
         val fld = fields.firstOrNull()
         when {
