@@ -5,12 +5,12 @@ that can automatically release gRPC resources at the end of the test.
 Like [GrpcCleanupRule](https://grpc.github.io/grpc-java/javadoc/io/grpc/testing/GrpcCleanupRule.html), but built for
 JUnit 5 and actively maintained.
 
-[![Sponsor](https://img.shields.io/static/v1?style=for-the-badge&label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/asarkar)
-[![CI](<https://img.shields.io/github/actions/workflow/status/asarkar/grpc-test/ci.yml?branch=main&logo=GitHub&style=for-the-badge>)](https://github.com/asarkar/grpc-test/actions?query=workflow%3A%22CI+Pipeline%22)
-[![Maven](https://img.shields.io/maven-central/v/com.asarkar.grpc/grpc-test?style=for-the-badge&logo=apache-maven)](https://central.sonatype.com/artifact/com.asarkar.grpc/grpc-test?smo=true)
-[![Javadoc](https://javadoc.io/badge2/com.asarkar.grpc/grpc-test/javadoc.svg?style=for-the-badge)](https://javadoc.io/doc/com.asarkar.grpc/grpc-test)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-black?style=for-the-badge&logo=github&color=%23fe8e86)](https://github.com/sponsors/asarkar)
+[![CI](<https://img.shields.io/github/actions/workflow/status/asarkar/grpc-test/ci.yml?branch=main&style=for-the-badge&logo=github>)](https://github.com/asarkar/grpc-test/actions?query=workflow%3A%22CI+Pipeline%22)
+[![Maven](https://img.shields.io/maven-central/v/com.asarkar.grpc/grpc-test?style=for-the-badge&logo=apachemaven)](https://central.sonatype.com/artifact/com.asarkar.grpc/grpc-test?smo=true)
+[![Javadoc](https://javadoc.io/badge2/com.asarkar.grpc/grpc-test/javadoc.svg?style=for-the-badge&logo=readthedocs&logoColor=white)](https://javadoc.io/doc/com.asarkar.grpc/grpc-test)
 [![License](https://img.shields.io/github/license/asarkar/grpc-test?style=for-the-badge&logo=apache&color=blue)](https://www.apache.org/licenses/LICENSE-2.0)
-[![COC](https://img.shields.io/static/v1?style=for-the-badge&label=COC&message=Code+Of+Conduct&color=brightgreen)](https://github.com/asarkar/.github/blob/main/CODE_OF_CONDUCT.md)
+[![COC](https://img.shields.io/badge/COC-Code%20Of%20Conduct-brightgreen?style=for-the-badge&logo=asterisk&logoColor=white)](https://github.com/asarkar/.github/blob/main/CODE_OF_CONDUCT.md)
 
 ## Usage
 
