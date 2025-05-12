@@ -26,9 +26,9 @@ dependencies {
 }
 
 val javaVersion =
-    JavaLanguageVersion.of(
-        rootDir.resolve(".java-version").readText(Charsets.UTF_8).trim(),
-    )
+    providers
+        .provider { rootDir.resolve(".java-version").readText(Charsets.UTF_8).trim() }
+        .map(JavaLanguageVersion::of)
 
 java {
     toolchain {

@@ -4,6 +4,7 @@ import com.vanniktech.maven.publish.tasks.JavadocJar
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
+import java.net.URI
 import com.vanniktech.maven.publish.JavadocJar as PublishJavadocJar
 
 plugins {
@@ -32,9 +33,9 @@ dependencies {
 }
 
 val javaVersion =
-    JavaLanguageVersion.of(
-        rootDir.resolve(".java-version").readText(Charsets.UTF_8).trim(),
-    )
+    providers
+        .provider { rootDir.resolve(".java-version").readText(Charsets.UTF_8).trim() }
+        .map(JavaLanguageVersion::of)
 
 kotlin {
     jvmToolchain {
@@ -55,13 +56,11 @@ ktlint {
     additionalEditorconfig = mapOf("max_line_length" to "100")
 }
 
-val gitHubUsername: String by lazy {
-    System.getenv("GITHUB_REPOSITORY_OWNER") ?: project.findProperty("gitHubUsername") as String
-}
-val gitHubRepo: String by lazy {
-    System.getenv("GITHUB_REPOSITORY") ?: "$gitHubUsername/${rootProject.name}"
-}
-val gitHubRepoUrl: String by lazy { "github.com/$gitHubRepo" }
+val gitHubUsername = providers.environmentVariable("GITHUB_REPOSITORY_OWNER")
+val gitHubRepo = providers.environmentVariable("GITHUB_REPOSITORY")
+val gitHubUrl = providers.environmentVariable("GITHUB_SERVER_URL")
+val gitHubDomain = gitHubUrl.map { URI(it).host }
+val gitHubRepoUrl = gitHubUrl.zip(gitHubRepo, { x, y -> "$x/$y" })
 
 dokka {
     moduleName = rootProject.name
@@ -69,11 +68,7 @@ dokka {
         failOnWarning = true
     }
     dokkaSourceSets.main {
-        jdkVersion = javaVersion.asInt()
-        sourceLink {
-            localDirectory = file(sourceRoots.asPath)
-            remoteUrl("https://$gitHubRepoUrl")
-        }
+        jdkVersion = javaVersion.map { it.asInt() }
     }
 }
 
@@ -100,7 +95,7 @@ mavenPublishing {
     pom {
         name = "$projectGroup:${rootProject.name}"
         description = projectDescription
-        url = "https://$gitHubRepoUrl"
+        url = gitHubRepoUrl
         licenses {
             license {
                 name = licenseName
@@ -110,13 +105,17 @@ mavenPublishing {
         developers {
             developer {
                 id = gitHubUsername
-                url = "https://github.com/$gitHubUsername"
+                url = gitHubUrl.zip(gitHubUsername, { x, y -> "$x/$y" })
             }
         }
         scm {
-            connection = "scm:git:git://$gitHubRepoUrl.git"
-            developerConnection = "scm:git:ssh://github.com:$gitHubRepo.git"
-            url = "https://$gitHubRepoUrl"
+            connection = gitHubDomain.zip(gitHubRepo, { x, y -> "scm:git:git://$x/$y.git" })
+            developerConnection =
+                gitHubDomain.zip(
+                    gitHubRepo,
+                    { x, y -> "scm:git:ssh://$x:$y.git" },
+                )
+            url = gitHubRepoUrl
         }
     }
 }
