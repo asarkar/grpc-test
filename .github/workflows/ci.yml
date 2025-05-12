@@ -15,7 +15,6 @@ jobs:
 
       - name: Build and test
         run: ./gradlew clean test
-        continue-on-error: true
 
       - name: Lint
         run: ./gradlew check -x test

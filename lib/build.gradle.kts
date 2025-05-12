@@ -45,24 +45,6 @@ kotlin {
     }
 }
 
-tasks.withType<Jar> {
-    manifest {
-        attributes("Automatic-Module-Name" to "com.asarkar.grpc.test")
-    }
-    archiveBaseName = rootProject.name
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        showStandardStreams = true
-    }
-    exclude("**/ignore/**")
-    // Suppress warning: Sharing is only supported for boot loader classes...
-    // https://stackoverflow.com/q/54205486/839733
-    jvmArgs("-Xshare:off")
-}
-
 val ci: Boolean by lazy { System.getenv("CI") != null }
 
 ktlint {
@@ -73,16 +55,9 @@ ktlint {
     additionalEditorconfig = mapOf("max_line_length" to "100")
 }
 
-tasks.withType<KtLintFormatTask> {
-    enabled = !ci
+val gitHubUsername: String by lazy {
+    System.getenv("GITHUB_REPOSITORY_OWNER") ?: project.findProperty("gitHubUsername") as String
 }
-
-tasks.withType<KtLintCheckTask> {
-    val fmtTaskName = name.replace("Check", "Format")
-    dependsOn(tasks.named(fmtTaskName))
-}
-
-val gitHubUsername: String by project
 val gitHubRepo: String by lazy {
     System.getenv("GITHUB_REPOSITORY") ?: "$gitHubUsername/${rootProject.name}"
 }
@@ -109,11 +84,6 @@ val licenseName: String by project
 val licenseUrl: String by project
 
 version = projectVersion
-
-// https://github.com/vanniktech/gradle-maven-publish-plugin/issues/966
-tasks.withType<JavadocJar> {
-    archiveFileName = "${rootProject.name}-javadoc.jar"
-}
 
 mavenPublishing {
     configure(
@@ -148,5 +118,46 @@ mavenPublishing {
             developerConnection = "scm:git:ssh://github.com:$gitHubRepo.git"
             url = "https://$gitHubRepoUrl"
         }
+    }
+}
+
+/*
+DO NOT use existing(Task::class) for configuring tasks.
+existing() if not referenced from another task is dropped on the floor!
+Use withTask() instead.
+*/
+tasks {
+    withType<Jar> {
+        manifest {
+            attributes("Automatic-Module-Name" to "com.asarkar.grpc.test")
+        }
+        archiveBaseName = rootProject.name
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            showStandardStreams = true
+        }
+        exclude("**/ignore/**")
+        // Suppress warning: Sharing is only supported for boot loader classes...
+        // https://stackoverflow.com/q/54205486/839733
+        jvmArgs("-Xshare:off")
+    }
+
+    // https://github.com/vanniktech/gradle-maven-publish-plugin/issues/966
+    withType<JavadocJar> {
+        archiveFileName = "${rootProject.name}-javadoc.jar"
+    }
+
+    withType<KtLintFormatTask> {
+        enabled = !ci
+    }
+
+    // https://github.com/JLLeitschuh/ktlint-gradle/issues/886
+    withType<KtLintCheckTask> {
+        val fmtTaskName = name.replace("Check", "Format")
+        val fmtTask by named(fmtTaskName)
+        dependsOn(fmtTask)
     }
 }

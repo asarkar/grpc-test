@@ -25,7 +25,10 @@ dependencies {
     errorprone(libs.errorprone)
 }
 
-val javaVersion = JavaLanguageVersion.of(rootDir.resolve(".java-version").readText(Charsets.UTF_8).trim())
+val javaVersion =
+    JavaLanguageVersion.of(
+        rootDir.resolve(".java-version").readText(Charsets.UTF_8).trim(),
+    )
 
 java {
     toolchain {
@@ -44,30 +47,35 @@ spotless {
     }
 }
 
-val ci: Boolean by lazy { listOf("CI").any { System.getenv(it) != null } }
-val spotlessTasks = arrayOf("spotlessApply", "spotlessCheck")
-val spotlessTask = spotlessTasks[true.compareTo(ci)]  // true > false
+val ci: Boolean by lazy { System.getenv("CI") != null }
 
-tasks.named(spotlessTask) {
-    enabled = false
-}
-
-tasks.named("check") {
-    dependsOn(spotlessTasks[0])
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        showStandardStreams = true
+/*
+DO NOT use existing(Task::class) for configuring tasks.
+existing() if not referenced from another task is dropped on the floor!
+Use withTask() instead.
+*/
+tasks {
+    test {
+        useJUnitPlatform()
+        testLogging {
+            showStandardStreams = true
+        }
+        // Suppress warning: Sharing is only supported for boot loader classes...
+        // https://stackoverflow.com/q/54205486/839733
+        jvmArgs("-Xshare:off")
     }
-    // Suppress warning: Sharing is only supported for boot loader classes...
-    // https://stackoverflow.com/q/54205486/839733
-    jvmArgs("-Xshare:off")
-}
 
-tasks.withType<SpotBugsTask> {
-    reports.create("html") {
-        required = !ci
+    withType<SpotBugsTask> {
+        reports.create("html") {
+            required = !ci
+        }
+    }
+
+    val spotlessApply by existing {
+        enabled = !ci
+    }
+
+    named("spotlessCheck") {
+        dependsOn(spotlessApply)
     }
 }
