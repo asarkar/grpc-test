@@ -35,10 +35,9 @@ jobs:
           java-version-file: ".java-version"
 
       - name: Publish to Maven Central
-        env:
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSPHRASE }}
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
         run: |
-          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+          ./gradlew -P signingInMemoryKey=${{ secrets.SIGNING_KEY }} \
+            -P signingInMemoryKeyPassword=${{ secrets.SIGNING_KEY_PASSPHRASE }} \
+            -P mavenCentralUsername=${{ secrets.SONATYPE_USERNAME }} \
+            -P mavenCentralPassword=${{ secrets.SONATYPE_PASSWORD }} \
+            publishAndReleaseToMavenCentral --no-configuration-cache
