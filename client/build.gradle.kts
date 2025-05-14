@@ -47,7 +47,7 @@ spotless {
     }
 }
 
-val ci: Boolean by lazy { System.getenv("CI") != null }
+val ci = providers.environmentVariable("CI")
 
 /*
 DO NOT use existing(Task::class) for configuring tasks.
@@ -67,12 +67,12 @@ tasks {
 
     withType<SpotBugsTask> {
         reports.create("html") {
-            required = !ci
+            required = !ci.isPresent
         }
     }
 
     val spotlessApply by existing {
-        enabled = !ci
+        enabled = !ci.isPresent
     }
 
     named("spotlessCheck") {

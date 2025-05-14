@@ -46,10 +46,10 @@ kotlin {
     }
 }
 
-val ci: Boolean by lazy { System.getenv("CI") != null }
+val ci = providers.environmentVariable("CI")
 
 ktlint {
-    outputToConsole = ci
+    outputToConsole = ci.isPresent
     reporters {
         reporter(ReporterType.HTML)
     }
@@ -150,7 +150,7 @@ tasks {
     }
 
     withType<KtLintFormatTask> {
-        enabled = !ci
+        enabled = !ci.isPresent
     }
 
     // https://github.com/JLLeitschuh/ktlint-gradle/issues/886
