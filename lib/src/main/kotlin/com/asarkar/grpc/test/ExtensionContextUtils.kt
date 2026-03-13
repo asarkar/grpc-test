@@ -12,22 +12,43 @@ private object ExtensionContextUtils {
     internal val NAMESPACE: ExtensionContext.Namespace =
         ExtensionContext.Namespace
             .create(*GrpcCleanupExtension::class.java.name.split(".").toTypedArray())
+
+    // Per-test (once=false): only ever written to method-level contexts.
+    // Keeping it out of class-level contexts ensures the Store hierarchy walk never returns
+    // a shared list to a concurrent sibling test.
     internal const val RESOURCES = "resources"
+
+    // Per-class (once=true): only ever written to class-level contexts, cleaned in afterAll.
+    internal const val RESOURCES_ONCE = "resources-once"
     internal const val RESOURCES_FIELD = "resources-field"
 }
 
 @Suppress("UNCHECKED_CAST")
-internal var ExtensionContext.resources: MutableMap<Boolean, MutableList<Resources>>
+internal var ExtensionContext.resources: MutableList<Resources>
     get() =
         getStore(ExtensionContextUtils.NAMESPACE)
             .getOrDefault(
                 ExtensionContextUtils.RESOURCES,
-                MutableMap::class.java,
-                mutableMapOf<Boolean, MutableList<Resources>>(),
-            ) as MutableMap<Boolean, MutableList<Resources>>
+                MutableList::class.java,
+                mutableListOf<Resources>(),
+            ) as MutableList<Resources>
     set(value) {
         getStore(ExtensionContextUtils.NAMESPACE)
             .put(ExtensionContextUtils.RESOURCES, value)
+    }
+
+@Suppress("UNCHECKED_CAST")
+internal var ExtensionContext.resourcesOnce: MutableList<Resources>
+    get() =
+        getStore(ExtensionContextUtils.NAMESPACE)
+            .getOrDefault(
+                ExtensionContextUtils.RESOURCES_ONCE,
+                MutableList::class.java,
+                mutableListOf<Resources>(),
+            ) as MutableList<Resources>
+    set(value) {
+        getStore(ExtensionContextUtils.NAMESPACE)
+            .put(ExtensionContextUtils.RESOURCES_ONCE, value)
     }
 
 internal var ExtensionContext.resourcesField: Field?

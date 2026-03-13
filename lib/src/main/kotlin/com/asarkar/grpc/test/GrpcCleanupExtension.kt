@@ -48,7 +48,7 @@ class GrpcCleanupExtension :
 
     override fun afterEach(ctx: ExtensionContext) {
         var successful = true
-        ctx.resources[false]?.forEach {
+        ctx.resources.forEach {
             ctx.cleanUp(it)
             successful = it.awaitRelease()
         }
@@ -87,10 +87,11 @@ class GrpcCleanupExtension :
                 )
 
         return Resources().also { resources ->
-            extensionCtx.resources =
-                extensionCtx.resources.also {
-                    it.getOrPut(once) { mutableListOf() }.add(resources)
-                }
+            if (once) {
+                extensionCtx.resourcesOnce = extensionCtx.resourcesOnce.also { it.add(resources) }
+            } else {
+                extensionCtx.resources = extensionCtx.resources.also { it.add(resources) }
+            }
         }
     }
 
@@ -116,7 +117,7 @@ class GrpcCleanupExtension :
             ctx.cleanUp(it)
             successful = it.awaitRelease()
         }
-        ctx.resources[true]?.forEach {
+        ctx.resourcesOnce.forEach {
             ctx.cleanUp(it)
             successful = it.awaitRelease()
         }
