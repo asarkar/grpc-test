@@ -2,6 +2,7 @@ package com.asarkar.grpc.test
 
 import com.asarkar.grpc.test.ignore.ExampleTestCase
 import com.asarkar.grpc.test.ignore.ExampleTestCase10
+import com.asarkar.grpc.test.ignore.ExampleTestCase11
 import com.asarkar.grpc.test.ignore.ExampleTestCase2
 import com.asarkar.grpc.test.ignore.ExampleTestCase3
 import com.asarkar.grpc.test.ignore.ExampleTestCase4
@@ -387,6 +388,29 @@ class GrpcCleanupExtensionIntegrationTests {
 
         assertThat(mocks).allMatch { it is Set<*> }
         assertThat(mocks.flatMap { it as Set<*> }.toSet()).hasSize(3)
+    }
+
+    @Test
+    fun testConcurrentResourceIsolation() {
+        // Enables parallel execution only for this EngineTestKit run, not globally.
+        // With the bug, testA fails because testB's afterEach prematurely shuts down
+        // testA's channel via the shared MutableMap in the class-level Store entry.
+        EngineTestKit.engine(JUNIT_JUPITER)
+            .configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
+            .configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
+            .configurationParameter("junit.jupiter.execution.parallel.config.strategy", "fixed")
+            .configurationParameter(
+                "junit.jupiter.execution.parallel.config.fixed.parallelism",
+                "2",
+            )
+            .selectors(selectClass(ExampleTestCase11::class.java))
+            .execute()
+            .testEvents()
+            .assertThatEvents()
+            .haveExactly(
+                2,
+                event(finishedSuccessfully()),
+            )
     }
 
     @Test
