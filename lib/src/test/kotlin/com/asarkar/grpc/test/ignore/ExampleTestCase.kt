@@ -19,64 +19,64 @@ class ExampleTestCase {
 
     @Test
     fun testSuccessful(resources: Resources) {
-        Mockito.`when`(
-            server.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        )
-            .thenReturn(true)
-        Mockito.`when`(
-            channel.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        )
-            .thenReturn(true)
+        Mockito
+            .`when`(
+                server.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
+        Mockito
+            .`when`(
+                channel.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
         resources.register(server).register(channel)
     }
 
     @Test
     fun testFailedShutdown(resources: Resources) {
-        Mockito.`when`(
-            server.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        )
-            .thenReturn(true)
+        Mockito
+            .`when`(
+                server.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
         resources.register(server).register(channel)
     }
 
     @Test
     fun testException(resources: Resources) {
-        Mockito.`when`(
-            server.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        )
-            .thenReturn(true)
-        Mockito.`when`(
-            channel.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        )
-            .thenReturn(true)
+        Mockito
+            .`when`(
+                server.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
+        Mockito
+            .`when`(
+                channel.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
         resources.register(server).register(channel)
         throw RuntimeException("Boom")
     }
 
     @Test
     fun testTimeout(resources: Resources) {
-        Mockito.`when`(
-            server.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        )
-            .thenAnswer {
+        Mockito
+            .`when`(
+                server.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenAnswer {
                 sleep(1000)
                 true
             }

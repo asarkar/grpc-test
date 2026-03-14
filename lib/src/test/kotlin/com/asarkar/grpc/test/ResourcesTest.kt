@@ -51,10 +51,10 @@ class ResourcesTest {
 
     @Test
     fun testCleanUp() {
-        Resources().apply {
-            register(server).register(channel)
-        }
-            .cleanUp()
+        Resources()
+            .apply {
+                register(server).register(channel)
+            }.cleanUp()
 
         verify(server, times(1)).shutdown()
         verify(channel, times(1)).shutdown()
@@ -62,10 +62,10 @@ class ResourcesTest {
 
     @Test
     fun testForceCleanUp() {
-        Resources().apply {
-            register(server).register(channel)
-        }
-            .forceCleanUp()
+        Resources()
+            .apply {
+                register(server).register(channel)
+            }.forceCleanUp()
 
         verify(server, times(1)).shutdownNow()
         verify(channel, times(1)).shutdownNow()

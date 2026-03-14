@@ -1,6 +1,4 @@
 import com.vanniktech.maven.publish.KotlinJvm
-import com.vanniktech.maven.publish.SonatypeHost
-import com.vanniktech.maven.publish.tasks.JavadocJar
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
@@ -83,13 +81,15 @@ version = projectVersion
 mavenPublishing {
     configure(
         KotlinJvm(
-            javadocJar = PublishJavadocJar.Dokka(tasks.dokkaGeneratePublicationHtml.name),
+            javadocJar = PublishJavadocJar.Dokka(tasks.dokkaGeneratePublicationHtml),
             sourcesJar = true,
         ),
     )
 
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
-    signAllPublications()
+    publishToMavenCentral(automaticRelease = false)
+    if (ci.isPresent) {
+        signAllPublications()
+    }
     coordinates(projectGroup, rootProject.name, projectVersion)
 
     pom {
@@ -142,11 +142,6 @@ tasks {
         // Suppress warning: Sharing is only supported for boot loader classes...
         // https://stackoverflow.com/q/54205486/839733
         jvmArgs("-Xshare:off")
-    }
-
-    // https://github.com/vanniktech/gradle-maven-publish-plugin/issues/966
-    withType<JavadocJar> {
-        archiveFileName = "${rootProject.name}-javadoc.jar"
     }
 
     withType<KtLintFormatTask> {

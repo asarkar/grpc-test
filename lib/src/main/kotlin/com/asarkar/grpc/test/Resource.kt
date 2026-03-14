@@ -32,7 +32,9 @@ interface Resource {
     fun awaitRelease(duration: Duration): Boolean
 }
 
-internal sealed class AbstractResource<E : Any>(private val e: E) : Resource {
+internal sealed class AbstractResource<E : Any>(
+    private val e: E,
+) : Resource {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -42,43 +44,39 @@ internal sealed class AbstractResource<E : Any>(private val e: E) : Resource {
         return e == other.e
     }
 
-    override fun hashCode(): Int {
-        return e.hashCode()
-    }
+    override fun hashCode(): Int = e.hashCode()
 
-    override fun toString(): String {
-        return e.toString()
-    }
+    override fun toString(): String = e.toString()
 }
 
-internal class ManagedChannelResource internal constructor(private val channel: ManagedChannel) :
-    AbstractResource<ManagedChannel>(channel) {
-        override fun cleanUp() {
-            channel.shutdown()
-        }
-
-        override fun forceCleanUp() {
-            channel.shutdownNow()
-        }
-
-        override fun awaitRelease(duration: Duration): Boolean {
-            return channel.awaitTermination(duration.toNanos(), TimeUnit.NANOSECONDS)
-        }
+internal class ManagedChannelResource internal constructor(
+    private val channel: ManagedChannel,
+) : AbstractResource<ManagedChannel>(channel) {
+    override fun cleanUp() {
+        channel.shutdown()
     }
 
-internal class ServerResource internal constructor(private val server: Server) :
-    AbstractResource<Server>(
+    override fun forceCleanUp() {
+        channel.shutdownNow()
+    }
+
+    override fun awaitRelease(duration: Duration): Boolean =
+        channel.awaitTermination(duration.toNanos(), TimeUnit.NANOSECONDS)
+}
+
+internal class ServerResource internal constructor(
+    private val server: Server,
+) : AbstractResource<Server>(
         server,
     ) {
-        override fun cleanUp() {
-            server.shutdown()
-        }
-
-        override fun forceCleanUp() {
-            server.shutdownNow()
-        }
-
-        override fun awaitRelease(duration: Duration): Boolean {
-            return server.awaitTermination(duration.toNanos(), TimeUnit.NANOSECONDS)
-        }
+    override fun cleanUp() {
+        server.shutdown()
     }
+
+    override fun forceCleanUp() {
+        server.shutdownNow()
+    }
+
+    override fun awaitRelease(duration: Duration): Boolean =
+        server.awaitTermination(duration.toNanos(), TimeUnit.NANOSECONDS)
+}
