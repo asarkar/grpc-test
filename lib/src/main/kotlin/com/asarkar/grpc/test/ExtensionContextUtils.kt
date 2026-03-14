@@ -11,7 +11,11 @@ import kotlin.reflect.KFunction1
 private object ExtensionContextUtils {
     internal val NAMESPACE: ExtensionContext.Namespace =
         ExtensionContext.Namespace
-            .create(*GrpcCleanupExtension::class.java.name.split(".").toTypedArray())
+            .create(
+                *GrpcCleanupExtension::class.java.name
+                    .split(".")
+                    .toTypedArray(),
+            )
     internal const val RESOURCES = "resources"
     internal const val RESOURCES_FIELD = "resources-field"
 }
@@ -72,8 +76,8 @@ internal val ExtensionContext.isAccessResourcesField: Boolean
 internal val ExtensionContext.cleanUp: KFunction1<Resources, Unit>
     get() = if (executionException.isPresent) Resources::forceCleanUp else Resources::cleanUp
 
-internal fun ExtensionContext.findResourcesField(): Field? {
-    return generateSequence<Pair<Class<*>?, Field?>>(
+internal fun ExtensionContext.findResourcesField(): Field? =
+    generateSequence<Pair<Class<*>?, Field?>>(
         (requiredTestClass to null),
     ) { (clazz, field) ->
         val fields =
@@ -93,10 +97,8 @@ internal fun ExtensionContext.findResourcesField(): Field? {
             clazz.superclass != null -> (clazz.superclass to field)
             else -> (null to field)
         }
-    }
-        .dropWhile { it.first != null && it.second == null }
+    }.dropWhile { it.first != null && it.second == null }
         .take(1)
         .iterator()
         .next()
         .second
-}

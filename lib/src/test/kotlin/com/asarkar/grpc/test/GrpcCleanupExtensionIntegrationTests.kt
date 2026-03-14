@@ -36,7 +36,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
@@ -45,8 +46,7 @@ class GrpcCleanupExtensionIntegrationTests {
                         Resources::class.java,
                     ),
                 ),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -59,7 +59,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val server = mocks.find { it is Server } as Server?
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdown()
-        Mockito.verify(server)!!
+        Mockito
+            .verify(server)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -67,7 +68,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdown()
-        Mockito.verify(channel)!!
+        Mockito
+            .verify(channel)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -79,7 +81,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
@@ -88,8 +91,7 @@ class GrpcCleanupExtensionIntegrationTests {
                         Resources::class.java,
                     ),
                 ),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -102,7 +104,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val server = mocks.find { it is Server } as Server?
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdown()
-        Mockito.verify(server)!!
+        Mockito
+            .verify(server)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -110,7 +113,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdown()
-        Mockito.verify(channel)!!
+        Mockito
+            .verify(channel)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -122,7 +126,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
@@ -131,8 +136,7 @@ class GrpcCleanupExtensionIntegrationTests {
                         Resources::class.java,
                     ),
                 ),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -145,7 +149,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val server = mocks.find { it is Server } as Server?
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdownNow()
-        Mockito.verify(server)!!
+        Mockito
+            .verify(server)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -153,7 +158,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val channel = mocks.find { it is ManagedChannel } as ManagedChannel?
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdownNow()
-        Mockito.verify(channel)!!
+        Mockito
+            .verify(channel)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -165,7 +171,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
@@ -174,8 +181,7 @@ class GrpcCleanupExtensionIntegrationTests {
                         Resources::class.java,
                     ),
                 ),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -187,7 +193,8 @@ class GrpcCleanupExtensionIntegrationTests {
         val server = mocks.find { it is Server } as Server?
         assertThat(server).isNotNull
         Mockito.verify(server)!!.shutdown()
-        Mockito.verify(server)!!
+        Mockito
+            .verify(server)!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -196,7 +203,8 @@ class GrpcCleanupExtensionIntegrationTests {
         assertThat(channel).isNotNull
         Mockito.verify(channel)!!.shutdown()
         Mockito.verify(channel)!!.shutdownNow()
-        Mockito.verify(channel, Mockito.never())!!
+        Mockito
+            .verify(channel, Mockito.never())!!
             .awaitTermination(
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any(TimeUnit::class.java),
@@ -208,11 +216,11 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase2::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -229,11 +237,11 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase3::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -247,11 +255,11 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testInitializeStaticFieldOnlyOnce() {
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase4::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -267,11 +275,11 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase5::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -285,7 +293,8 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testMultipleParametersError(info: TestInfo) {
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectMethod(
                     ExampleTestCase::class.java,
@@ -295,8 +304,7 @@ class GrpcCleanupExtensionIntegrationTests {
                         Resources::class.java,
                     ),
                 ),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -307,13 +315,13 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testMultipleInstanceFieldsError() {
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(
                     ExampleTestCase6::class.java,
                 ),
-            )
-            .execute()
+            ).execute()
             .allEvents()
             .assertThatEvents()
             .haveExactly(
@@ -327,11 +335,11 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase7::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -345,11 +353,11 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testAlreadyInitializedFieldError() {
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase8::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -363,11 +371,11 @@ class GrpcCleanupExtensionIntegrationTests {
         val mocks = mutableListOf<Any>()
         val listener = MockCreationListener { mock, _ -> mocks.add(mock) }
         Mockito.framework().addListener(listener)
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase9::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
@@ -383,11 +391,11 @@ class GrpcCleanupExtensionIntegrationTests {
 
     @Test
     fun testNested() {
-        EngineTestKit.engine(JUNIT_JUPITER)
+        EngineTestKit
+            .engine(JUNIT_JUPITER)
             .selectors(
                 selectClass(ExampleTestCase10::class.java),
-            )
-            .execute()
+            ).execute()
             .testEvents()
             .assertThatEvents()
             .haveExactly(
