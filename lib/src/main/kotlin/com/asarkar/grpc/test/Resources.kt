@@ -30,9 +30,7 @@ class Resources {
     fun <T : Server> register(
         server: T,
         timeout: Duration = this.timeout,
-    ): Resources {
-        return this.apply { this@Resources.resources[ServerResource(server)] = timeout }
-    }
+    ): Resources = this.apply { this@Resources.resources[ServerResource(server)] = timeout }
 
     /**
      * Registers the given channel with the extension. Once registered, the channel will be automatically
@@ -48,13 +46,12 @@ class Resources {
     fun <T : ManagedChannel> register(
         channel: T,
         timeout: Duration = this.timeout,
-    ): Resources {
-        return this.apply {
+    ): Resources =
+        this.apply {
             this@Resources.resources[
                 ManagedChannelResource(channel),
             ] = timeout
         }
-    }
 
     /**
      * A positive time limit for the registered resources to be released. If the resources fail to
@@ -65,9 +62,7 @@ class Resources {
      *
      * @return this
      */
-    fun timeout(timeout: Duration): Resources {
-        return this.apply { this@Resources.timeout = timeout }
-    }
+    fun timeout(timeout: Duration): Resources = this.apply { this@Resources.timeout = timeout }
 
     internal fun cleanUp() {
         resources.keys.forEach { it.cleanUp() }
@@ -97,13 +92,12 @@ class Resources {
         return successful
     }
 
-    override fun toString(): String {
-        return if (resources.isEmpty()) {
+    override fun toString(): String =
+        if (resources.isEmpty()) {
             "Resources[]"
         } else {
             "Resources${resources.keys.map { it.toString() }}"
         }
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -114,7 +108,5 @@ class Resources {
         return resources.keys == other.resources.keys
     }
 
-    override fun hashCode(): Int {
-        return Objects.hashCode(resources.keys)
-    }
+    override fun hashCode(): Int = Objects.hashCode(resources.keys)
 }

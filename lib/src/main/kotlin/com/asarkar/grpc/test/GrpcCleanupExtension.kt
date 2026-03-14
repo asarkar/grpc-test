@@ -25,7 +25,11 @@ import org.junit.platform.commons.PreconditionViolationException
  * @since 1.0.0
  */
 class GrpcCleanupExtension :
-    BeforeEachCallback, AfterEachCallback, ParameterResolver, BeforeAllCallback, AfterAllCallback {
+    BeforeEachCallback,
+    AfterEachCallback,
+    ParameterResolver,
+    BeforeAllCallback,
+    AfterAllCallback {
     override fun beforeEach(ctx: ExtensionContext) {
         val resources =
             ctx.requiredTestMethod.parameters
@@ -71,9 +75,7 @@ class GrpcCleanupExtension :
     override fun supportsParameter(
         parameterContext: ParameterContext,
         extensionContext: ExtensionContext,
-    ): Boolean {
-        return parameterContext.parameter.type == Resources::class.java
-    }
+    ): Boolean = parameterContext.parameter.type == Resources::class.java
 
     override fun resolveParameter(
         parameterCtx: ParameterContext,

@@ -48,3 +48,18 @@ extension will not reinitialize it.
 :information_source: If you're writing `@Nested` tests, see [issues/8](https://github.com/asarkar/grpc-test/issues/8).
 
 The test class in [client](client/src/test) project uses the `GrpcCleanupExtension` from Java code.
+
+## Development
+
+**Option 1**: Install Java with `mise`, then run Gradle directly.
+
+```sh
+mise install
+./gradlew clean build
+```
+
+**Option 2**: Run Gradle through `mise`.
+
+```sh
+mise exec -- ./gradlew clean build
+```
