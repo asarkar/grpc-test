@@ -54,13 +54,13 @@ class GrpcCleanupExtension :
         var successful = true
         ctx.resources.forEach {
             ctx.cleanUp(it)
-            successful = it.awaitRelease()
+            successful = it.awaitRelease() && successful
         }
 
         if (ctx.isAccessResourcesField) {
             ctx.resourcesInstance?.also {
                 ctx.cleanUp(it)
-                successful = it.awaitRelease()
+                successful = it.awaitRelease() && successful
 
                 ctx.resourcesInstance = null
             }
@@ -117,11 +117,11 @@ class GrpcCleanupExtension :
         var successful = true
         ctx.resourcesInstance?.also {
             ctx.cleanUp(it)
-            successful = it.awaitRelease()
+            successful = it.awaitRelease() && successful
         }
         ctx.resourcesOnce.forEach {
             ctx.cleanUp(it)
-            successful = it.awaitRelease()
+            successful = it.awaitRelease() && successful
         }
         if (!successful) {
             throw PostconditionViolationException(

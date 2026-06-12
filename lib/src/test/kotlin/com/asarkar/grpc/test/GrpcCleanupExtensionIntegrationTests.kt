@@ -3,6 +3,8 @@ package com.asarkar.grpc.test
 import com.asarkar.grpc.test.ignore.ExampleTestCase
 import com.asarkar.grpc.test.ignore.ExampleTestCase10
 import com.asarkar.grpc.test.ignore.ExampleTestCase11
+import com.asarkar.grpc.test.ignore.ExampleTestCase12
+import com.asarkar.grpc.test.ignore.ExampleTestCase13
 import com.asarkar.grpc.test.ignore.ExampleTestCase2
 import com.asarkar.grpc.test.ignore.ExampleTestCase3
 import com.asarkar.grpc.test.ignore.ExampleTestCase4
@@ -410,6 +412,32 @@ class GrpcCleanupExtensionIntegrationTests {
             .haveExactly(
                 2,
                 event(finishedSuccessfully()),
+            )
+    }
+
+    @Test
+    fun testMaskedFailureInAfterEach() {
+        EngineTestKit.engine(JUNIT_JUPITER)
+            .selectors(selectClass(ExampleTestCase12::class.java))
+            .execute()
+            .testEvents()
+            .assertThatEvents()
+            .haveExactly(
+                1,
+                event(finishedWithFailure(instanceOf(PostconditionViolationException::class.java))),
+            )
+    }
+
+    @Test
+    fun testMaskedFailureInAfterAll() {
+        EngineTestKit.engine(JUNIT_JUPITER)
+            .selectors(selectClass(ExampleTestCase13::class.java))
+            .execute()
+            .allEvents()
+            .assertThatEvents()
+            .haveExactly(
+                1,
+                event(finishedWithFailure(instanceOf(PostconditionViolationException::class.java))),
             )
     }
 
