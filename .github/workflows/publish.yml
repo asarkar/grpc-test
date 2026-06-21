@@ -26,9 +26,9 @@ jobs:
         uses: jdx/mise-action@v4
 
       - name: Publish to Maven Central
-        run: |
-          ./gradlew -P signingInMemoryKey=${{ secrets.SIGNING_KEY }} \
-            -P signingInMemoryKeyPassword=${{ secrets.SIGNING_KEY_PASSPHRASE }} \
-            -P mavenCentralUsername=${{ secrets.SONATYPE_USERNAME }} \
-            -P mavenCentralPassword=${{ secrets.SONATYPE_PASSWORD }} \
-            publishAndReleaseToMavenCentral --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSPHRASE }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
