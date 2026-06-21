@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.TimeUnit
 
@@ -37,6 +39,9 @@ class ExampleTestCase11 {
     companion object {
         @JvmStatic
         val barrier = CyclicBarrier(2)
+
+        @JvmStatic
+        val testBDone = CountDownLatch(1)
     }
 
     @BeforeAll
@@ -55,9 +60,11 @@ class ExampleTestCase11 {
         // Both tests must have registered before either exits, ensuring both are in the
         // shared resource list before testB's afterEach fires.
         barrier.await(5, TimeUnit.SECONDS)
-        // Give testB time to return and its afterEach to run. With the bug, afterEach for
-        // testB drains the shared list which includes testA's channel, shutting it down.
-        Thread.sleep(300)
+        // Wait until testB's body has returned, then give its afterEach a brief window to
+        // dispatch. With the bug, that afterEach drains the shared list — which includes
+        // testA's channel — shutting it down before this assertion runs.
+        testBDone.await(5, TimeUnit.SECONDS)
+        Thread.sleep(50)
         assertThat(ch.isShutdown).isFalse()
     }
 
@@ -65,6 +72,7 @@ class ExampleTestCase11 {
     fun testB(resources: Resources) {
         resources.register(TestUtils.randomChannel())
         barrier.await(5, TimeUnit.SECONDS)
-        // Return immediately so afterEach fires while testA is still sleeping.
+        // Signal that testB is about to return so testA only waits on afterEach dispatch.
+        testBDone.countDown()
     }
 }

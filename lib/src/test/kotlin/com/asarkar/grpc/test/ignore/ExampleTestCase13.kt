@@ -32,21 +32,23 @@ class ExampleTestCase13 {
     @BeforeAll
     fun beforeAll(once: Resources) {
         val channel = Mockito.mock(ManagedChannel::class.java)
-        Mockito.`when`(
-            channel.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        ).thenReturn(true)
+        Mockito
+            .`when`(
+                channel.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
         once.register(channel)
 
         val server = Mockito.mock(Server::class.java)
-        Mockito.`when`(
-            server.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        ).thenReturn(false)
+        Mockito
+            .`when`(
+                server.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(false)
         resources.register(server)
     }
 

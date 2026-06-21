@@ -28,21 +28,23 @@ class ExampleTestCase12 {
     @Test
     fun testMaskedFailure(params: Resources) {
         val server = Mockito.mock(Server::class.java)
-        Mockito.`when`(
-            server.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        ).thenReturn(false)
+        Mockito
+            .`when`(
+                server.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(false)
         params.register(server)
 
         val channel = Mockito.mock(ManagedChannel::class.java)
-        Mockito.`when`(
-            channel.awaitTermination(
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(TimeUnit::class.java),
-            ),
-        ).thenReturn(true)
+        Mockito
+            .`when`(
+                channel.awaitTermination(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(TimeUnit::class.java),
+                ),
+            ).thenReturn(true)
         resources.register(channel)
     }
 }
