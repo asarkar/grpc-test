@@ -1,9 +1,8 @@
 name: CI
 on:
   push:
-    tags-ignore:
+    branches:
       - "**"
-  pull_request:
   workflow_dispatch:
 jobs:
   Build:
