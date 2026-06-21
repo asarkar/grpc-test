@@ -1,6 +1,9 @@
 name: CI
-on: [push, workflow_dispatch]
-
+on:
+  push:
+    tags-ignore:
+      - "**"
+  workflow_dispatch:
 jobs:
   Build:
     runs-on: ubuntu-latest
